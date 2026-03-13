@@ -12,6 +12,9 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.get("/", (req, res) => {
+  res.send("Velorent API is running 🚗");
+});
 
 /* ======================
    MongoDB Atlas
