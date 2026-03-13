@@ -13,18 +13,18 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-/* =========================
-   MongoDB Atlas Connection
-========================= */
+/* ======================
+   MongoDB Atlas
+====================== */
 
 mongoose
-mongoose
-  .connect("mongodb+srv://jayanthkumar30855_db_user:velorent123@cluster0.s1cnmuz.mongodb.net/velorent")
+  .connect("mongodb+srv://jayanthkumar30855_db_user:YOUR_PASSWORD@cluster0.s1cnmuz.mongodb.net/velorent")
   .then(() => console.log("MongoDB Atlas Connected"))
   .catch((err) => console.log(err));
-/* =========================
+
+/* ======================
    JWT Middleware
-========================= */
+====================== */
 
 const protect = (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
@@ -42,9 +42,9 @@ const protect = (req, res, next) => {
   }
 };
 
-/* =========================
+/* ======================
    Register
-========================= */
+====================== */
 
 app.post("/api/register", async (req, res) => {
   const { name, email, password } = req.body;
@@ -66,9 +66,9 @@ app.post("/api/register", async (req, res) => {
   res.json({ message: "User registered", user });
 });
 
-/* =========================
+/* ======================
    Login
-========================= */
+====================== */
 
 app.post("/api/login", async (req, res) => {
   const { email, password } = req.body;
@@ -94,9 +94,9 @@ app.post("/api/login", async (req, res) => {
   res.json({ token });
 });
 
-/* =========================
+/* ======================
    Cars
-========================= */
+====================== */
 
 app.get("/api/cars", async (req, res) => {
   const cars = await Car.find();
@@ -113,16 +113,14 @@ app.post("/api/cars", async (req, res) => {
   res.json(car);
 });
 
-/* Delete Car */
-
 app.delete("/api/cars/:id", async (req, res) => {
   await Car.findByIdAndDelete(req.params.id);
   res.json({ message: "Car deleted successfully" });
 });
 
-/* =========================
-   Booking
-========================= */
+/* ======================
+   Book Car
+====================== */
 
 app.post("/api/bookings", protect, async (req, res) => {
   const { carId, startDate, endDate } = req.body;
@@ -162,28 +160,30 @@ app.post("/api/bookings", protect, async (req, res) => {
   res.json(booking);
 });
 
-/* =========================
+/* ======================
    My Bookings
-========================= */
+====================== */
 
 app.get("/api/my-bookings", protect, async (req, res) => {
   const bookings = await Booking.find({ user: req.user }).populate("car");
   res.json(bookings);
 });
 
-/* =========================
+/* ======================
    Cancel Booking
-========================= */
+====================== */
 
 app.delete("/api/bookings/:id", protect, async (req, res) => {
   await Booking.findByIdAndDelete(req.params.id);
   res.json({ message: "Booking cancelled" });
 });
 
-/* =========================
-   Start Server
-========================= */
+/* ======================
+   Render Port Fix
+====================== */
 
-app.get("/",(req, res) => {
-  res.send("Velorent Backend API is running");
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
